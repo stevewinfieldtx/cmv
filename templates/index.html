@@ -6,6 +6,9 @@
     <title>Custom Music Videos - Create Your Unique Music Video</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="min-h-screen">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -26,7 +29,7 @@
             cursor: pointer;
         }
         .step-card.active, .mood-card.active, .vision-card.active, [data-plan].active {
-            border-color: #ff6b6b;
+            border-color: #ff6b6b !important;
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.2);
         }
@@ -49,8 +52,6 @@
             background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
         }
     </style>
-</head>
-<body class="min-h-screen">
     <nav class="container mx-auto px-6 py-4">
         <div class="flex items-center justify-between">
             <div class="text-2xl font-bold text-white">
@@ -154,12 +155,12 @@
                 </div>
             </div>
 
-            <div class="step-content hidden" id="step3">...Step 3 Content...</div>
-            <div class="step-content hidden" id="step4">...Step 4 Content...</div>
-            <div class="step-content hidden" id="step5">...Step 5 Content...</div>
+            <div class="step-content hidden" id="step3"><h3 class="text-2xl font-semibold">Step 3 Content</h3><div class="mt-8 flex justify-between"><button id="backToStep2" class="bg-gray-700 px-8 py-3 rounded-full">Back</button><button id="nextToStep4" class="gradient-button px-8 py-3 rounded-full">Continue</button></div></div>
+            <div class="step-content hidden" id="step4"><h3 class="text-2xl font-semibold">Step 4 Content</h3><div class="mt-8 flex justify-between"><button id="backToStep3" class="bg-gray-700 px-8 py-3 rounded-full">Back</button><button id="nextToStep5" class="gradient-button px-8 py-3 rounded-full">Continue</button></div></div>
+            <div class="step-content hidden" id="step5"><h3 class="text-2xl font-semibold">Step 5 Content</h3><div class="mt-8 flex justify-between"><button id="backToStep4" class="bg-gray-700 px-8 py-3 rounded-full">Back</button><button id="completeOrder" class="gradient-button px-8 py-3 rounded-full">Complete Order</button></div></div>
         </div>
     </section>
-    
-    <script src="/static/app.js"></script>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
