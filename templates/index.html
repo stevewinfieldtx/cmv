@@ -1,50 +1,983 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Music Video Creator - AI-Powered Creative Studio</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://js.stripe.com/v3/"></script>
+    <title>Custom Music Videos - Create Your Unique Music Video</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            scroll-behavior: smooth;
+        }
+        .video-card {
+            transition: all 0.3s ease;
+        }
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+        .gradient-button {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            transition: all 0.3s ease;
+        }
+        .gradient-button:hover {
+            background: linear-gradient(90deg, #ff8e53 0%, #ff6b6b 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.3);
+        }
+        .hero-glow {
+            position: absolute;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(255, 107, 107, 0.2) 0%, rgba(21, 21, 46, 0) 70%);
+            top: 20%;
+            left: 20%;
+            z-index: 0;
+            filter: blur(50px);
+        }
+        .video-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+        }
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .play-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .step-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .step-card.active {
+            border-color: #ff6b6b;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.2);
+        }
+        .step-number {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .coming-soon-badge {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            transition: width 0.3s ease;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+        }
+        .vision-card {
+            transition: all 0.3s ease;
+        }
+        .vision-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        .deliverable-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mood-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .mood-card:hover, .mood-card.active {
+            transform: translateY(-5px);
+            border-color: #ff6b6b;
+        }
+        .mood-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .age-option {
+            transition: all 0.3s ease;
+        }
+        .age-option.active {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+        }
+        .lyric-idea-tag {
+            transition: all 0.3s ease;
+        }
+        .lyric-idea-tag:hover {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ff8e53 100%);
+            color: white;
+        }
+    </style>
 </head>
-<body>
-    <div class="background-gradient"></div>
-    <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <i class="fas fa-play-circle"></i>
-                    <h1>MusicVideo<span class="accent">Creator</span></h1>
-                </div>
-                <div class="header-subtitle">
-                    Create stunning music videos powered by AI
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="text-2xl font-bold text-white">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">CustomMusicVideos</span>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#how-it-works" class="text-gray-200 hover:text-white transition">How It Works</a>
+                <a href="#examples" class="text-gray-200 hover:text-white transition">Examples</a>
+                <a href="#pricing" class="text-gray-200 hover:text-white transition">Pricing</a>
+            </div>
+            <div>
+                <button class="gradient-button px-6 py-2 rounded-full font-medium">Get Started</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative container mx-auto px-6 py-16 md:py-24">
+        <div class="hero-glow"></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="z-10">
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                    Your Vision, <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400">Your Music</span>
+                </h1>
+                <p class="mt-6 text-xl text-gray-300">
+                    Create stunning custom music videos with AI-generated music and visuals based on your unique vision - from simple concepts to detailed specifications.
+                </p>
+                <div class="mt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <a href="#create-flow" class="gradient-button px-8 py-3 rounded-full font-medium text-lg text-center">
+                        Start Creating
+                    </a>
+                    <a href="#examples" class="bg-transparent border-2 border-white px-8 py-3 rounded-full font-medium text-lg hover:bg-white hover:text-gray-900 transition text-center">
+                        See Examples
+                    </a>
                 </div>
             </div>
-        </header>
-
-        <main class="main-content">
-            <nav class="tab-navigation">
-                <button class="tab-button active" data-tab="music">
-                    <i class="fas fa-music"></i>
-                    <span>Music</span>
-                </button>
-                <button class="tab-button" data-tab="video">
-                    <i class="fas fa-video"></i>
-                    <span>Video</span>
-                </button>
-            </nav>
-
-            <div class="content-wrapper">
-                <div class="tab-content active" id="music-tab">
+            <div class="relative z-10">
+                <div class="video-container shadow-2xl">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='450' viewBox='0 0 800 450'%3E%3Crect width='800' height='450' fill='%23252945'/%3E%3Cpath d='M400 225m-100 0a100 100 0 1 0 200 0a100 100 0 1 0 -200 0' fill='%23ff6b6b' opacity='0.7'/%3E%3Cpath d='M350 150l150 75l-150 75z' fill='white'/%3E%3C/svg%3E" alt="Featured Music Video" class="w-full h-auto rounded-xl">
+                    <div class="play-button" id="heroPlayButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
                     </div>
-                <div class="tab-content" id="video-tab">
-                    </div>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
 
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
+    <!-- What You Get Section -->
+    <section class="container mx-auto px-6 py-16 bg-gray-900 rounded-3xl my-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold">What You'll Get</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                Everything you need to share your creation with the world
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="deliverable-icon mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">MP3 Audio File</h3>
+                <p class="text-gray-400">
+                    Your custom AI-generated music track based on your preferences or unique vision.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="deliverable-icon mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">MP4 Video File</h3>
+                <p class="text-gray-400">
+                    Your complete music video with custom visuals perfectly synchronized to your music.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="deliverable-icon mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">Social Media Sharing</h3>
+                <p class="text-gray-400">
+                    One-click sharing to all major social media platforms to showcase your creation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Flow Section -->
+    <section id="create-flow" class="container mx-auto px-6 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold">Create Your Music Video</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                Follow these simple steps to create your custom music video
+            </p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="w-full bg-gray-800 h-1 rounded-full mb-8 max-w-3xl mx-auto">
+            <div class="progress-bar rounded-full" id="progressBar" style="width: 20%;"></div>
+        </div>
+
+        <!-- Steps Navigation -->
+        <div class="flex justify-between max-w-3xl mx-auto mb-12">
+            <button class="step-nav-button active" data-step="1">
+                <div class="step-number">1</div>
+                <span class="text-sm mt-2 hidden md:block">Basics</span>
+            </button>
+            <div class="flex-1 border-t-2 border-gray-700 self-center mx-2"></div>
+            <button class="step-nav-button" data-step="2">
+                <div class="step-number bg-gray-700">2</div>
+                <span class="text-sm mt-2 hidden md:block">Music</span>
+            </button>
+            <div class="flex-1 border-t-2 border-gray-700 self-center mx-2"></div>
+            <button class="step-nav-button" data-step="3">
+                <div class="step-number bg-gray-700">3</div>
+                <span class="text-sm mt-2 hidden md:block">Visuals</span>
+            </button>
+            <div class="flex-1 border-t-2 border-gray-700 self-center mx-2"></div>
+            <button class="step-nav-button" data-step="4">
+                <div class="step-number bg-gray-700">4</div>
+                <span class="text-sm mt-2 hidden md:block">Customize</span>
+            </button>
+            <div class="flex-1 border-t-2 border-gray-700 self-center mx-2"></div>
+            <button class="step-nav-button" data-step="5">
+                <div class="step-number bg-gray-700">5</div>
+                <span class="text-sm mt-2 hidden md:block">Checkout</span>
+            </button>
+        </div>
+
+        <!-- Step Content -->
+        <div class="max-w-4xl mx-auto bg-gray-900 rounded-3xl p-8">
+            <!-- Step 1: Basics -->
+            <div class="step-content" id="step1">
+                <h3 class="text-2xl font-semibold mb-6">Basic Information</h3>
+                <p class="text-gray-300 mb-8">Let's start with some basic information about your music video.</p>
+                
+                <div class="space-y-8">
+                    <!-- Target Audience Age -->
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h4 class="text-xl font-medium mb-4">Target Audience Age</h4>
+                        <p class="text-gray-400 mb-4">Select the age group this music video is intended for.</p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="age-option bg-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-600 transition">
+                                <span class="text-2xl mb-2 block">👶</span>
+                                <span class="font-medium">Under 6 years</span>
+                            </div>
+                            <div class="age-option bg-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-600 transition">
+                                <span class="text-2xl mb-2 block">🧒</span>
+                                <span class="font-medium">7-12 years</span>
+                            </div>
+                            <div class="age-option bg-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-600 transition">
+                                <span class="text-2xl mb-2 block">👦</span>
+                                <span class="font-medium">13-18 years</span>
+                            </div>
+                            <div class="age-option bg-gray-700 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-600 transition active">
+                                <span class="text-2xl mb-2 block">👨</span>
+                                <span class="font-medium">18+ years</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Length -->
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h4 class="text-xl font-medium mb-4">Video Length</h4>
+                        <p class="text-gray-400 mb-4">Choose how long you want your music video to be.</p>
+                        
+                        <div class="flex items-center space-x-4 flex-wrap gap-y-2">
+                            <button class="tab-button active px-4 py-2 rounded-lg bg-gray-700" data-length="30">30 seconds</button>
+                            <button class="tab-button px-4 py-2 rounded-lg bg-gray-700" data-length="60">60 seconds</button>
+                            <button class="tab-button px-4 py-2 rounded-lg bg-gray-700" data-length="120">2 minutes</button>
+                            <button class="tab-button px-4 py-2 rounded-lg bg-gray-700" data-length="180">3 minutes</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Overall Mood -->
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h4 class="text-xl font-medium mb-4">Overall Mood</h4>
+                        <p class="text-gray-400 mb-4">Select the mood you want your music video to convey.</p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">😊</div>
+                                <h5 class="font-medium">Happy</h5>
+                                <p class="text-sm text-gray-400">Upbeat and joyful</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">🥰</div>
+                                <h5 class="font-medium">Romantic</h5>
+                                <p class="text-sm text-gray-400">Loving and tender</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">😎</div>
+                                <h5 class="font-medium">Energetic</h5>
+                                <p class="text-sm text-gray-400">Dynamic and powerful</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">😢</div>
+                                <h5 class="font-medium">Emotional</h5>
+                                <p class="text-sm text-gray-400">Touching and deep</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">🤔</div>
+                                <h5 class="font-medium">Thoughtful</h5>
+                                <p class="text-sm text-gray-400">Reflective and calm</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">🤩</div>
+                                <h5 class="font-medium">Epic</h5>
+                                <p class="text-sm text-gray-400">Grand and inspiring</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center">
+                                <div class="mood-icon">😆</div>
+                                <h5 class="font-medium">Funny</h5>
+                                <p class="text-sm text-gray-400">Humorous and light</p>
+                            </div>
+                            
+                            <div class="mood-card border border-gray-700 rounded-lg p-4 text-center active">
+                                <div class="mood-icon">✨</div>
+                                <h5 class="font-medium">Custom</h5>
+                                <p class="text-sm text-gray-400">Define your own</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-end">
+                    <button class="gradient-button px-8 py-3 rounded-full font-medium" id="nextToStep2">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Step 2: Music Style -->
+            <div class="step-content hidden" id="step2">
+                <h3 class="text-2xl font-semibold mb-6">Choose Your Music Style</h3>
+                <p class="text-gray-300 mb-8">Select a music style or artist that inspires you, and we'll create something similar or guide you to create something unique.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 rounded-xl p-6 step-card active" data-option="similar">
+                        <h4 class="text-xl font-medium mb-3">Similar to My Favorite</h4>
+                        <p class="text-gray-400 mb-4">We'll create music inspired by your favorite artists or songs.</p>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Artist or Song Reference</label>
+                            <input type="text" placeholder="e.g., Taylor Swift, The Weeknd, Lo-fi beats" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500">
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6 step-card" data-option="unique">
+                        <h4 class="text-xl font-medium mb-3">Create Something Unique</h4>
+                        <p class="text-gray-400 mb-4">We'll guide you through creating your own unique masterpiece.</p>
+                        <div class="mt-4">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Describe Your Vision</label>
+                            <textarea placeholder="Describe the mood, tempo, and style you're looking for..." class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lyrics Ideas Section -->
+                <div class="mt-8 bg-gray-800 rounded-xl p-6">
+                    <h4 class="text-xl font-medium mb-4">Lyrics Ideas</h4>
+                    <p class="text-gray-400 mb-4">Select a theme for your lyrics or create your own.</p>
+                    
+                    <div class="flex flex-wrap gap-3">
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Birthday</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Anniversary</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Graduation</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Sports Team</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">School</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Historical Event</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Historical Figure</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Funny</span>
+                        <span class="lyric-idea-tag bg-gray-700 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-600 transition">Custom</span>
+                    </div>
+                    
+                    <div class="mt-4 hidden" id="customLyricsInput">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Custom Lyrics Theme</label>
+                        <textarea placeholder="Describe what you want your lyrics to be about..." class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button class="bg-gray-700 px-8 py-3 rounded-full font-medium hover:bg-gray-600 transition" id="backToStep1">Back</button>
+                    <button class="gradient-button px-8 py-3 rounded-full font-medium" id="nextToStep3">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Step 3: Visual Vision -->
+            <div class="step-content hidden" id="step3">
+                <h3 class="text-2xl font-semibold mb-6">Describe Your Visual Vision</h3>
+                <p class="text-gray-300 mb-8">Tell us what you want to see in your music video - from simple concepts to detailed specifications.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gray-800 rounded-xl p-5 vision-card cursor-pointer">
+                        <h4 class="font-medium mb-2">Simple Concept</h4>
+                        <p class="text-gray-400 text-sm">A basic theme or subject</p>
+                        <div class="mt-3 text-sm text-pink-400">Example: "Puppies playing in a park"</div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-5 vision-card cursor-pointer">
+                        <h4 class="font-medium mb-2">Descriptive Scene</h4>
+                        <p class="text-gray-400 text-sm">More detailed visual description</p>
+                        <div class="mt-3 text-sm text-pink-400">Example: "Majestic lightning storms in snowy mountains"</div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-5 vision-card cursor-pointer">
+                        <h4 class="font-medium mb-2">Detailed Specification</h4>
+                        <p class="text-gray-400 text-sm">Precise visual requirements</p>
+                        <div class="mt-3 text-sm text-pink-400">Example: "Ultra-realistic cityscape with cinematic lighting"</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Describe Your Visual Vision</label>
+                    <textarea placeholder="Describe what you want to see in your music video..." class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500" rows="5"></textarea>
+                    <p class="mt-3 text-sm text-gray-400">Be as simple or as detailed as you want. Our AI will bring your vision to life.</p>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button class="bg-gray-700 px-8 py-3 rounded-full font-medium hover:bg-gray-600 transition" id="backToStep2">Back</button>
+                    <button class="gradient-button px-8 py-3 rounded-full font-medium" id="nextToStep4">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Step 4: Customize -->
+            <div class="step-content hidden" id="step4">
+                <h3 class="text-2xl font-semibold mb-6">Customize Your Video</h3>
+                <p class="text-gray-300 mb-8">Fine-tune your music video with these options.</p>
+                
+                <div class="space-y-6">
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <h4 class="text-xl font-medium mb-3">Add Your Branding</h4>
+                        <div class="flex items-center mb-4">
+                            <input type="checkbox" id="addBranding" class="w-5 h-5 rounded text-pink-500 focus:ring-pink-500 mr-2">
+                            <label for="addBranding">Include my logo or name in the video</label>
+                        </div>
+                        <div class="hidden" id="brandingOptions">
+                            <input type="text" placeholder="Your name or brand" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 mb-4">
+                            <p class="text-sm text-gray-400">Upload logo feature coming soon</p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xl font-medium">Story Elements</h4>
+                            <span class="coming-soon-badge">Coming Soon</span>
+                        </div>
+                        <p class="text-gray-400">Add narrative elements to your music video to tell a compelling story.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button class="bg-gray-700 px-8 py-3 rounded-full font-medium hover:bg-gray-600 transition" id="backToStep3">Back</button>
+                    <button class="gradient-button px-8 py-3 rounded-full font-medium" id="nextToStep5">Continue</button>
+                </div>
+            </div>
+            
+            <!-- Step 5: Checkout -->
+            <div class="step-content hidden" id="step5">
+                <h3 class="text-2xl font-semibold mb-6">Choose Your Plan</h3>
+                <p class="text-gray-300 mb-8">Select the plan that works best for you.</p>
+                
+                <div class="space-y-6">
+                    <!-- Pricing Options -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Option 1: $1 for 2 videos -->
+                        <div class="bg-gray-800 rounded-xl p-6 border-2 border-transparent hover:border-pink-500 transition cursor-pointer">
+                            <h4 class="text-xl font-medium mb-2">Quick Start</h4>
+                            <div class="text-3xl font-bold mb-2">$1</div>
+                            <p class="text-gray-400 mb-4">Get 2 custom music videos</p>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    2 custom music videos
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    HD Quality
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    MP3 & MP4 downloads
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Option 2: $5 for 15 videos -->
+                        <div class="bg-gradient-to-br from-pink-500 to-orange-400 rounded-xl p-6 transform scale-105 relative">
+                            <div class="absolute top-0 right-0 bg-white text-pink-500 text-xs font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">BEST VALUE</div>
+                            <h4 class="text-xl font-medium mb-2">Bulk Package</h4>
+                            <div class="text-3xl font-bold mb-2">$5</div>
+                            <p class="text-white opacity-90 mb-4">Get 15 custom music videos</p>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    15 custom music videos
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Just $0.33 per video!
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    HD Quality
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    MP3 & MP4 downloads
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Option 3: $5/month for 20 videos -->
+                        <div class="bg-gray-800 rounded-xl p-6 border-2 border-transparent hover:border-pink-500 transition cursor-pointer">
+                            <h4 class="text-xl font-medium mb-2">Subscription</h4>
+                            <div class="text-3xl font-bold mb-2">$5<span class="text-sm text-gray-400">/month</span></div>
+                            <p class="text-gray-400 mb-4">Get 20 videos every month</p>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    20 videos per month
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    HD Quality
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Cancel anytime
+                                </li>
+                                <li class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                    Priority support
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-between">
+                    <button class="bg-gray-700 px-8 py-3 rounded-full font-medium hover:bg-gray-600 transition" id="backToStep4">Back</button>
+                    <button class="gradient-button px-8 py-3 rounded-full font-medium" id="completeOrder">Complete Order</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="container mx-auto px-6 py-16">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold">How It Works</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                Creating your custom music video is simple and straightforward
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">1. Choose Your Music</h3>
+                <p class="text-gray-400">
+                    Select a style similar to your favorite artist or create something completely unique.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">2. Describe Your Vision</h3>
+                <p class="text-gray-400">
+                    Tell us what you want to see - from simple concepts to detailed specifications.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">3. Customize Your Video</h3>
+                <p class="text-gray-400">
+                    Choose your video length, add branding, and fine-tune other options.
+                </p>
+            </div>
+            
+            <div class="bg-gray-800 p-8 rounded-xl text-center">
+                <div class="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-400 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-4">4. Share With The World</h3>
+                <p class="text-gray-400">
+                    Download your MP3 and MP4 files and share them directly to social media.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Examples Section -->
+    <section class="container mx-auto px-6 py-16 bg-gray-900 rounded-3xl my-16">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold">Vision Examples</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                From simple to detailed, our AI can bring any vision to life
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Simple Vision -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-3">Simple Vision</h3>
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <p class="text-gray-300 italic">"Puppies playing in a park"</p>
+                    </div>
+                    <p class="text-gray-400">
+                        A straightforward concept that our AI will transform into adorable scenes of puppies playing, perfectly synchronized with your music.
+                    </p>
+                </div>
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%23303a52'/%3E%3Ccircle cx='200' cy='112' r='50' fill='%23ff6b6b' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Simple Vision Example" class="w-full">
+                </div>
+            </div>
+            
+            <!-- Descriptive Vision -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-3">Descriptive Vision</h3>
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <p class="text-gray-300 italic">"Majestic lightning storms in snowy mountains during winter"</p>
+                    </div>
+                    <p class="text-gray-400">
+                        A more detailed scene that our AI will render with dramatic weather effects and stunning mountain landscapes.
+                    </p>
+                </div>
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%23252945'/%3E%3Cpath d='M150 75 L250 75 L250 150 L150 150 Z' fill='%2347b8e0' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Descriptive Vision Example" class="w-full">
+                </div>
+            </div>
+            
+            <!-- Detailed Vision -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold mb-3">Detailed Vision</h3>
+                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                        <p class="text-gray-300 italic">"Wide angle view of an ultra-realistic cityscape at sunset with photographic quality, hyper-detailed architecture..."</p>
+                    </div>
+                    <p class="text-gray-400">
+                        A highly specific vision with technical details that our AI will meticulously render to your exact specifications.
+                    </p>
+                </div>
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%231a1a2e'/%3E%3Cpath d='M200 75 L250 125 L200 175 L150 125 Z' fill='%239b59b6' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Detailed Vision Example" class="w-full">
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <a href="#create-flow" class="gradient-button px-8 py-3 rounded-full font-medium text-lg inline-block">
+                Create Your Own Vision
+            </a>
+        </div>
+    </section>
+
+    <!-- Example Videos Section -->
+    <section id="examples" class="container mx-auto px-6 py-16">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold">Example Videos</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                Check out these amazing custom music videos we've created
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Video 1 -->
+            <div class="video-card bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%23303a52'/%3E%3Ccircle cx='200' cy='112' r='50' fill='%23ff6b6b' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Pop Music Video" class="w-full">
+                    <div class="play-button video-play" data-video="pop">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold">Pop Sensation</h3>
+                    <p class="text-gray-400 mt-2">Inspired by modern pop artists with catchy beats and vibrant visuals.</p>
+                </div>
+            </div>
+            
+            <!-- Video 2 -->
+            <div class="video-card bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%23252945'/%3E%3Cpath d='M150 75 L250 75 L250 150 L150 150 Z' fill='%2347b8e0' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Hip Hop Music Video" class="w-full">
+                    <div class="play-button video-play" data-video="hiphop">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold">Hip Hop Flow</h3>
+                    <p class="text-gray-400 mt-2">Urban aesthetics with cutting-edge effects that complement rap and hip hop tracks.</p>
+                </div>
+            </div>
+            
+            <!-- Video 3 -->
+            <div class="video-card bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="video-container">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='225' viewBox='0 0 400 225'%3E%3Crect width='400' height='225' fill='%231a1a2e'/%3E%3Cpath d='M200 75 L250 125 L200 175 L150 125 Z' fill='%239b59b6' opacity='0.7'/%3E%3Cpath d='M175 85l75 27l-75 28z' fill='white'/%3E%3C/svg%3E" alt="Electronic Music Video" class="w-full">
+                    <div class="play-button video-play" data-video="electronic">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold">Electronic Dreams</h3>
+                    <p class="text-gray-400 mt-2">Futuristic visuals with stunning light effects for electronic and dance music.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <a href="#create-flow" class="gradient-button px-8 py-3 rounded-full font-medium text-lg inline-block">
+                Create Your Own Video
+            </a>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="container mx-auto px-6 py-16 bg-gray-900 rounded-3xl my-16">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold">Simple Pricing</h2>
+            <p class="mt-4 text-xl text-gray-300 max-w-2xl mx-auto">
+                Affordable options for everyone
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Option 1: $1 for 2 videos -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="p-8">
+                    <h3 class="text-2xl font-semibold">Quick Start</h3>
+                    <div class="mt-4 flex items-end">
+                        <span class="text-4xl font-bold">$1</span>
+                    </div>
+                    <p class="mt-2 text-gray-400">Try it out with 2 videos</p>
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            2 custom music videos
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            HD Quality
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            MP3 & MP4 downloads
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Social media sharing
+                        </li>
+                    </ul>
+                </div>
+                <div class="p-8 bg-gray-900">
+                    <a href="#create-flow" class="w-full py-3 rounded-full bg-white text-gray-900 font-medium hover:bg-gray-200 transition block text-center">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Option 2: $5 for 15 videos -->
+            <div class="bg-gradient-to-br from-pink-500 to-orange-400 rounded-xl overflow-hidden shadow-lg transform scale-105">
+                <div class="p-8">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-semibold">Bulk Package</h3>
+                        <span class="bg-white text-pink-500 px-3 py-1 rounded-full text-sm font-medium">Best Value</span>
+                    </div>
+                    <div class="mt-4 flex items-end">
+                        <span class="text-4xl font-bold">$5</span>
+                    </div>
+                    <p class="mt-2 text-white opacity-80">Get 15 videos for just $0.33 each</p>
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            15 custom music videos
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            HD Quality
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            MP3 & MP4 downloads
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Social media sharing
+                        </li>
+                    </ul>
+                </div>
+                <div class="p-8 bg-gray-900 bg-opacity-30">
+                    <a href="#create-flow" class="w-full py-3 rounded-full bg-white text-pink-500 font-medium hover:bg-gray-100 transition block text-center">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Option 3: $5/month for 20 videos -->
+            <div class="bg-gray-800 rounded-xl overflow-hidden shadow-lg">
+                <div class="p-8">
+                    <h3 class="text-2xl font-semibold">Subscription</h3>
+                    <div class="mt-4 flex items-end">
+                        <span class="text-4xl font-bold">$5</span>
+                        <span class="text-gray-400 ml-2">/ month</span>
+                    </div>
+                    <p class="mt-2 text-gray-400">Create videos all month long</p>
+                    <ul class="mt-6 space-y-4">
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            20 videos per month
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            HD Quality
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Cancel anytime
+                        </li>
+                        <li class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Priority support
+                        </li>
+                    </ul>
+                </div>
+                <div class="p-8 bg-gray-900">
+                    <a href="#create-flow" class="w-full py-3 rounded-full bg-white text-gray-900 font-medium hover:bg-gray-200 transition block text-center">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="container mx-auto px-6 py-12 border-t border-gray-800">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="text-2xl font-bold text-white mb-6 md:mb-0">
+                <span class="text-transparent bg-clip```
+
+    <script src="/static/app.js"></script>
 </body>
 </html>
