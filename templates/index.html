@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+
+
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -184,7 +186,10 @@
             box-shadow: 0 10px 15px -3px rgba(255, 107, 107, 0.3) !important;
             background-color: rgba(255, 107, 107, 0.1) !important;
         }
-    </style>
+    </style>'
+<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+
 </head>
 <body class="min-h-screen">
     <!-- Navigation -->
@@ -1013,5 +1018,98 @@
                 <span class="text-transparent bg-clip```
 
     <script src="/static/app_final.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Utility
+    const qsAll = (sel) => document.querySelectorAll(sel);
+    const qs = (sel) => document.querySelector(sel);
+
+    // Step navigation
+    const steps = [...qsAll(".step-content")];
+    const stepNavButtons = qsAll(".step-nav-button");
+    const progressBar = qs("#progressBar");
+
+    let currentStep = 1;
+
+    function showStep(step) {
+        currentStep = step;
+
+        steps.forEach((s, i) => {
+            s.classList.toggle("hidden", i !== step - 1);
+        });
+
+        stepNavButtons.forEach(btn => {
+            const isActive = parseInt(btn.dataset.step) === step;
+            btn.classList.toggle("active", isActive);
+            const number = btn.querySelector(".step-number");
+            number.classList.toggle("bg-gray-700", !isActive);
+        });
+
+        const percent = Math.round((step / steps.length) * 100);
+        progressBar.style.width = `${percent}%`;
+    }
+
+    // Nav bar step clicks
+    stepNavButtons.forEach(btn => {
+        btn.addEventListener("click", () => showStep(parseInt(btn.dataset.step)));
+    });
+
+    // Next / Back buttons
+    for (let i = 1; i <= steps.length; i++) {
+        const nextBtn = qs(`#nextToStep${i + 1}`);
+        const backBtn = qs(`#backToStep${i}`);
+
+        if (nextBtn) nextBtn.addEventListener("click", () => showStep(i + 1));
+        if (backBtn) backBtn.addEventListener("click", () => showStep(i));
+    }
+
+    // Tab buttons (video length)
+    qsAll(".tab-button").forEach(btn => {
+        btn.addEventListener("click", () => {
+            qsAll(".tab-button").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+        });
+    });
+
+    // Age options
+    qsAll(".age-option").forEach(opt => {
+        opt.addEventListener("click", () => {
+            qsAll(".age-option").forEach(o => o.classList.remove("active"));
+            opt.classList.add("active");
+        });
+    });
+
+    // Mood cards
+    qsAll(".mood-card").forEach(card => {
+        card.addEventListener("click", () => {
+            qsAll(".mood-card").forEach(c => c.classList.remove("active"));
+            card.classList.add("active");
+        });
+    });
+
+    // Lyrics idea tag logic
+    const customLyricsInput = qs("#customLyricsInput");
+    qsAll(".lyric-idea-tag").forEach(tag => {
+        tag.addEventListener("click", () => {
+            qsAll(".lyric-idea-tag").forEach(t => t.classList.remove("active"));
+            tag.classList.add("active");
+
+            const isCustom = tag.innerText.trim().toLowerCase() === "custom";
+            customLyricsInput.classList.toggle("hidden", !isCustom);
+        });
+    });
+
+    // Branding checkbox
+    const brandingToggle = qs("#addBranding");
+    const brandingOptions = qs("#brandingOptions");
+    brandingToggle.addEventListener("change", () => {
+        brandingOptions.classList.toggle("hidden", !brandingToggle.checked);
+    });
+
+    // Start on Step 1
+    showStep(1);
+});
+</script>
+
 </body>
 </html>
