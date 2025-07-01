@@ -9,3 +9,4 @@ soundfile        # also required by librosa
 # If using cloud storage:
 google-cloud-storage
 boto3
+gunicorn
